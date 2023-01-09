@@ -1,9 +1,36 @@
-// import type { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
+import { v4 as uuiadva } from 'uuid'
 
+import type { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
+
+import Moment from 'App/Models/Moment'
+
+import Application from '@ioc:Adonis/Core/Application'
 export default class MomentsController {
-  public async store() {
+  private validationOptions = {
+    types: ['image'],
+    size: '2mb',
+  }
+
+  public async store({ request, response }: HttpContextContract) {
+    const body = request.body()
+
+    const image = request.file('image', this.validationOptions)
+    if (image) {
+      const imageName = `${uuiadva()}.${image.extname}`
+
+      await image.move(Application.tmpPath('uploads'), {
+        name: imageName,
+      })
+      body.image = imageName
+    }
+
+    const moment = await Moment.create(body)
+
+    response.status(201)
+
     return {
-      msg: 'Deu certo!',
+      message: 'Momento criado com sucesso!',
+      data: moment,
     }
   }
 }
