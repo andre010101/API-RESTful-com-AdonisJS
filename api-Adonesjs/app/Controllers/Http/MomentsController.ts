@@ -35,7 +35,6 @@ export default class MomentsController {
   }
   public async index() {
     const moments = await Moment.all()
-
     return {
       data: moments,
     }
@@ -44,6 +43,16 @@ export default class MomentsController {
   public async show({ params }: HttpContextContract) {
     const moment = await Moment.findOrFail(params.id)
     return {
+      data: moment,
+    }
+  }
+
+  public async destroy({ params }: HttpContextContract) {
+    const moment = await Moment.findOrFail(params.id)
+    await moment.delete()
+
+    return {
+      message: 'Momento excluido com sucesso!',
       data: moment,
     }
   }

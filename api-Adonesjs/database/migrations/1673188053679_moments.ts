@@ -1,6 +1,6 @@
 import BaseSchema from '@ioc:Adonis/Lucid/Schema'
 
-export default class extends BaseSchema {
+export default class Moments extends BaseSchema {
   protected tableName = 'moments'
 
   public async up() {
@@ -8,7 +8,7 @@ export default class extends BaseSchema {
       table.increments('id')
       table.string('title')
       table.string('description')
-      table.string('imag')
+      table.string('image')
 
       /**
        * Uses timestamptz for PostgreSQL and DATETIME2 for MSSQL
