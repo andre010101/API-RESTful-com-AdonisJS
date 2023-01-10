@@ -1,10 +1,8 @@
-import { v4 as uuiadva } from 'uuid'
-
-import type { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
-
+import { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 import Moment from 'App/Models/Moment'
-
 import Application from '@ioc:Adonis/Core/Application'
+
+import { v4 as uuidv4 } from 'uuid'
 export default class MomentsController {
   private validationOptions = {
     types: ['image'],
@@ -16,7 +14,7 @@ export default class MomentsController {
 
     const image = request.file('image', this.validationOptions)
     if (image) {
-      const imageName = `${uuiadva()}.${image.extname}`
+      const imageName = `${uuidv4()}.${image!.extname}`
 
       await image.move(Application.tmpPath('uploads'), {
         name: imageName,
@@ -53,6 +51,38 @@ export default class MomentsController {
 
     return {
       message: 'Momento excluido com sucesso!',
+      data: moment,
+    }
+  }
+
+  public async update({ params, request }: HttpContextContract) {
+    const body = request.body()
+
+    const moment = await Moment.findOrFail(params.id)
+
+    moment.title = body.title
+
+    moment.description = body.description
+
+    // eslint-disable-next-line eqeqeq
+    if (moment.imag != body.image || !moment.imag) {
+      const imag = request.file('image', this.validationOptions)
+
+      if (imag) {
+        const imagName = `${uuidv4()}.${imag!.extname}`
+
+        await imag.move(Application.tmpPath('uploads'), {
+          name: imagName,
+        })
+
+        moment.imag = imagName
+      }
+    }
+
+    await moment.save()
+
+    return {
+      message: 'Momento atualizad com sucesso!',
       data: moment,
     }
   }
