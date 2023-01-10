@@ -12,7 +12,7 @@ export default class Moment extends BaseModel {
   public description: string
 
   @column()
-  public image: string
+  public imag: string
 
   @column.dateTime({ autoCreate: true })
   public createdAt: DateTime
